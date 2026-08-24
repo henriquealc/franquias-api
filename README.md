@@ -2,7 +2,7 @@
 
 API REST desenvolvida em C# / ASP.NET Core para gestão de uma rede de franquias, contemplando cadastro de unidades, produtos, controle de estoque, vendas, cálculo de royalties, fornecedores, chamados de suporte e relatórios gerenciais.
 
-Trabalho acadêmico da disciplina de Desenvolvimento Back-end — Uninter.
+Trabalho acadêmico da disciplina de Desenvolvimento Back-end - Uninter
 
 ## Tecnologias utilizadas
 
