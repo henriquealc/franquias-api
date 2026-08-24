@@ -61,9 +61,9 @@ A maioria dos endpoints exige autenticação. Para testar:
 
 ## Estrutura do projeto
 Franquias.Api/
-├── Controllers/ -> Endpoints da API
-├── Models/ -> Entidades do banco de dados
-├── DTOs/ -> Objetos de transferência de dados
-├── Data/ -> Contexto do Entity Framework Core
-├── Migrations/ -> Histórico de alterações do banco
-└── Program.cs -> Configuração da aplicação
+  - Controllers/ -> Endpoints da API
+  - Models/ -> Entidades do banco de dados
+  - DTOs/ -> Objetos de transferência de dados
+  - Data/ -> Contexto do Entity Framework Core
+  - Migrations/ -> Histórico de alterações do banco
+  - Program.cs -> Configuração da aplicação
