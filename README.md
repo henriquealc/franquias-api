@@ -117,7 +117,7 @@ Sem token, qualquer endpoint protegido retorna `401 Unauthorized`.
 | Perfil | Acesso |
 |---|---|
 | Administrador | Todos os endpoints, incluindo cadastro/edição de usuários e franqueadoras |
-| Gestor / Operador | Endpoints de operação (unidades, produtos, estoque, vendas, fornecedores, royalties, chamados, relatórios) — exigem apenas estar autenticado |
+| Gestor / Operador | Endpoints de operação (unidades, produtos, estoque, vendas, fornecedores, royalties, chamados, relatórios) exigem apenas estar autenticado |
 
 ## Estrutura do projeto
 Franquias.Api/
