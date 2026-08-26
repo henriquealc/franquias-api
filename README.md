@@ -50,14 +50,74 @@ dotnet run
 http://localhost:5035/swagger
 
 
-### Autenticação
+## Autenticação (JWT)
+A API usa autenticação via JSON Web Token (JWT). A maioria dos endpoints exige um token válido no cabeçalho `Authorization`. Endpoints de cadastro/edição de usuários e franqueadoras exigem, além disso, perfil "Administrador".
 
-A maioria dos endpoints exige autenticação. Para testar:
+### 1. Cadastrar um usuário
+`POST /api/Usuarios`
 
-1. Crie um usuário via `POST /api/Usuarios` (perfil "Administrador" para acesso total).
-2. Faça login via `POST /api/Auth/login` com o e-mail e senha cadastrados.
-3. Copie o `token` retornado.
-4. No Swagger, clique no botão "Authorize" (canto superior direito) e cole o token.
+```json
+{
+  "nome": "Admin Franquias",
+  "email": "admin@franquias.com",
+  "senhaHash": "senha123",
+  "perfil": "Administrador",
+  "ativo": true
+}
+```
+
+> O campo `senhaHash` recebe a senha em texto puro no cadastro, o servidor transforma automaticamente em hash (bcrypt) antes de salvar no banco. A senha original nunca é armazenada.
+
+Resposta (`201 Created`):
+```json
+{
+  "id": 1,
+  "nome": "Admin Franquias",
+  "email": "admin@franquias.com",
+  "senhaHash": "$2a$11$...",
+  "perfil": "Administrador",
+  "ativo": true
+}
+```
+
+### 2. Fazer login
+`POST /api/Auth/login`
+
+```json
+{
+  "email": "admin@franquias.com",
+  "senha": "senha123"
+}
+```
+
+Resposta (`200 OK`):
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "nome": "Admin Franquias",
+  "perfil": "Administrador"
+}
+```
+
+O token expira em 120 minutos (configurável em `appsettings.json`, seção `Jwt:ExpiraEmMinutos`).
+
+### 3. Usar o token nas próximas requisições
+Envie o token no cabeçalho `Authorization` de cada requisição:
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+**Testando pelo Swagger:**
+1. Clique no botão "Authorize" (cadeado, canto superior direito da página `/swagger`).
+2. Cole apenas o valor do token (sem a palavra "Bearer", o Swagger adiciona isso automaticamente).
+3. Clique em "Authorize" e depois "Close".
+4. Todos os endpoints protegidos passam a funcionar normalmente enquanto o token for válido.
+
+Sem token, qualquer endpoint protegido retorna `401 Unauthorized`.
+
+### Perfis de acesso
+| Perfil | Acesso |
+|---|---|
+| Administrador | Todos os endpoints, incluindo cadastro/edição de usuários e franqueadoras |
+| Gestor / Operador | Endpoints de operação (unidades, produtos, estoque, vendas, fornecedores, royalties, chamados, relatórios) — exigem apenas estar autenticado |
 
 ## Estrutura do projeto
 Franquias.Api/
