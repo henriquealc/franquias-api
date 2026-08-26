@@ -2,7 +2,7 @@
 
 API REST desenvolvida em C# / ASP.NET Core para gestão de uma rede de franquias, contemplando cadastro de unidades, produtos, controle de estoque, vendas, cálculo de royalties, fornecedores, chamados de suporte e relatórios gerenciais.
 
-Trabalho acadêmico da disciplina de Desenvolvimento Back-end — Uninter.
+Trabalho acadêmico da disciplina de Desenvolvimento Back-end - Uninter
 
 ## Tecnologias utilizadas
 
@@ -121,9 +121,9 @@ Sem token, qualquer endpoint protegido retorna `401 Unauthorized`.
 
 ## Estrutura do projeto
 Franquias.Api/
-├── Controllers/ -> Endpoints da API
-├── Models/ -> Entidades do banco de dados
-├── DTOs/ -> Objetos de transferência de dados
-├── Data/ -> Contexto do Entity Framework Core
-├── Migrations/ -> Histórico de alterações do banco
-└── Program.cs -> Configuração da aplicação
+  - Controllers/ -> Endpoints da API
+  - Models/ -> Entidades do banco de dados
+  - DTOs/ -> Objetos de transferência de dados
+  - Data/ -> Contexto do Entity Framework Core
+  - Migrations/ -> Histórico de alterações do banco
+  - Program.cs -> Configuração da aplicação
