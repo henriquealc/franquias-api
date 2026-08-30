@@ -57,4 +57,22 @@ public class UsuariosController : ControllerBase
 
         return CreatedAtAction(nameof(GetUsuario), new { id = usuario.Id }, usuario);
     }
+
+    [HttpPut("{id}")]
+    [Authorize(Roles = "Administrador")]
+    public async Task<IActionResult> Atualizar(int id, [FromBody] UsuarioUpdateDto dto)
+    {
+        var usuario = await _context.Usuarios.FindAsync(id);
+
+        if (usuario == null)
+            return NotFound("Usuário não encontrado.");
+
+        usuario.Nome = dto.Nome;
+        usuario.Perfil = dto.Perfil;
+        usuario.Ativo = dto.Ativo;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(usuario);
+    }
 }

@@ -72,4 +72,29 @@ public class ProdutosServicosController : ControllerBase
 
         return NoContent();
     }
+    
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Excluir(int id)
+    {
+        var produto = await _context.ProdutosServicos.FindAsync(id);
+
+        if (produto == null)
+            return NotFound("Produto ou serviço não encontrado.");
+
+        var temMovimentacao = await _context.MovimentacoesEstoque
+            .AnyAsync(m => m.ProdutoServicoId == id);
+
+        var temItemVenda = await _context.ItensVenda
+            .AnyAsync(i => i.ProdutoServicoId == id);
+
+        if (temMovimentacao || temItemVenda)
+        {
+            return BadRequest("Não é possível excluir este produto: já existem movimentações de estoque ou vendas vinculadas a ele. Considere inativá-lo em vez de excluí-lo.");
+        }
+
+        _context.ProdutosServicos.Remove(produto);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }

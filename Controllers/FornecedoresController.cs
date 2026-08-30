@@ -82,4 +82,18 @@ public class FornecedoresController : ControllerBase
 
         return NoContent();
     }
+    
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Excluir(int id)
+    {
+        var fornecedor = await _context.Fornecedores.FindAsync(id);
+
+        if (fornecedor == null)
+            return NotFound("Fornecedor não encontrado.");
+
+        _context.Fornecedores.Remove(fornecedor);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }

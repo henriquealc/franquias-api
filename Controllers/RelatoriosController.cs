@@ -36,6 +36,42 @@ public class RelatoriosController : ControllerBase
         return resultado;
     }
 
+    [HttpGet("ranking-unidades")]
+    public async Task<ActionResult> RankingUnidadesPorFaturamento()
+    {
+        var ranking = await _context.Vendas
+            .GroupBy(v => new { v.UnidadeFranqueadaId, v.UnidadeFranqueada!.NomeUnidade })
+            .Select(g => new
+            {
+                unidadeId = g.Key.UnidadeFranqueadaId,
+                unidade = g.Key.NomeUnidade,
+                faturamento = g.Sum(v => v.ValorTotal)
+            })
+            .OrderByDescending(r => r.faturamento)
+            .ToListAsync();
+
+        return Ok(ranking);
+    }
+
+    [HttpGet("royalties-total")]
+    public async Task<ActionResult> TotalRoyaltiesGerados()
+    {
+        var totalGerado = await _context.Royalties.SumAsync(r => r.ValorRoyalty);
+
+        var totalPago = await _context.Royalties
+            .Where(r => r.Status == StatusPagamento.Pago)
+            .SumAsync(r => r.ValorRoyalty);
+
+        var totalPendente = totalGerado - totalPago;
+
+        return Ok(new
+        {
+            totalGerado,
+            totalPago,
+            totalPendente
+        });
+    }
+
     // GET: api/relatorios/produtos-mais-vendidos
     [HttpGet("produtos-mais-vendidos")]
     public async Task<ActionResult<IEnumerable<object>>> ProdutosMaisVendidos()

@@ -66,4 +66,46 @@ public class UnidadesFranqueadasController : ControllerBase
 
         return CreatedAtAction(nameof(GetUnidade), new { id = unidade.Id }, unidade);
     }
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Atualizar(int id, [FromBody] UnidadeFranqueadaUpdateDto dto)
+    {
+        var unidade = await _context.UnidadesFranqueadas.FindAsync(id);
+
+        if (unidade == null)
+            return NotFound("Unidade franqueada não encontrada.");
+
+        unidade.NomeUnidade = dto.NomeUnidade;
+        unidade.Endereco = dto.Endereco;
+        unidade.NomeResponsavel = dto.NomeResponsavel;
+        unidade.ContatoResponsavel = dto.ContatoResponsavel;
+        unidade.Ativa = dto.Ativa;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(unidade);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Excluir(int id)
+    {
+        var unidade = await _context.UnidadesFranqueadas.FindAsync(id);
+
+        if (unidade == null)
+            return NotFound("Unidade franqueada não encontrada.");
+
+        var temVenda = await _context.Vendas.AnyAsync(v => v.UnidadeFranqueadaId == id);
+        var temRoyalty = await _context.Royalties.AnyAsync(r => r.UnidadeFranqueadaId == id);
+        var temChamado = await _context.ChamadosSuporte.AnyAsync(c => c.UnidadeFranqueadaId == id);
+        var temMovimentacao = await _context.MovimentacoesEstoque.AnyAsync(m => m.UnidadeFranqueadaId == id);
+
+        if (temVenda || temRoyalty || temChamado || temMovimentacao)
+        {
+            return BadRequest("Não é possível excluir esta unidade: já existem vendas, royalties, chamados ou movimentações de estoque vinculados a ela. Considere inativá-la em vez de excluí-la.");
+        }
+
+        _context.UnidadesFranqueadas.Remove(unidade);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }
