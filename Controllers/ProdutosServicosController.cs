@@ -18,11 +18,26 @@ public class ProdutosServicosController : ControllerBase
         _context = context;
     }
 
-    // GET: api/produtosservicos
+    // GET: api/produtosservicos?pagina=1&tamanhoPagina=10&orderBy=nome
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ProdutoServico>>> GetProdutos()
+    public async Task<ActionResult<IEnumerable<ProdutoServico>>> GetProdutos(
+        int pagina = 1,
+        int tamanhoPagina = 10,
+        string? orderBy = null)
     {
-        return await _context.ProdutosServicos.ToListAsync();
+        var query = _context.ProdutosServicos.AsQueryable();
+
+        query = orderBy switch
+        {
+            "nome" => query.OrderBy(p => p.Nome),
+            "preco" => query.OrderBy(p => p.PrecoBase),
+            _ => query.OrderBy(p => p.Id)
+        };
+
+        return await query
+            .Skip((pagina - 1) * tamanhoPagina)
+            .Take(tamanhoPagina)
+            .ToListAsync();
     }
 
     // GET: api/produtosservicos/5
@@ -46,6 +61,33 @@ public class ProdutosServicosController : ControllerBase
         return await _context.ProdutosServicos
             .Where(p => p.Categoria == categoria)
             .ToListAsync();
+    }
+
+    // GET: api/produtosservicos/buscar?nome=xxx&categoria=xxx&ativo=true
+    [HttpGet("buscar")]
+    public async Task<ActionResult<IEnumerable<ProdutoServico>>> Buscar(
+        string? nome,
+        string? categoria,
+        bool? ativo)
+    {
+        var query = _context.ProdutosServicos.AsQueryable();
+
+        if (!string.IsNullOrEmpty(nome))
+        {
+            query = query.Where(p => p.Nome.Contains(nome));
+        }
+
+        if (!string.IsNullOrEmpty(categoria))
+        {
+            query = query.Where(p => p.Categoria == categoria);
+        }
+
+        if (ativo.HasValue)
+        {
+            query = query.Where(p => p.Ativo == ativo.Value);
+        }
+
+        return await query.ToListAsync();
     }
 
     // POST: api/produtosservicos
@@ -72,7 +114,7 @@ public class ProdutosServicosController : ControllerBase
 
         return NoContent();
     }
-    
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> Excluir(int id)
     {

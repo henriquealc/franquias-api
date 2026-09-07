@@ -19,14 +19,29 @@ public class VendasController : ControllerBase
         _context = context;
     }
 
-    // GET: api/vendas
+    // GET: api/vendas?pagina=1&tamanhoPagina=10&orderBy=data
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Venda>>> GetVendas()
+    public async Task<ActionResult<IEnumerable<Venda>>> GetVendas(
+        int pagina = 1,
+        int tamanhoPagina = 10,
+        string? orderBy = null)
     {
-        return await _context.Vendas
+        var query = _context.Vendas
             .Include(v => v.UnidadeFranqueada)
             .Include(v => v.Itens)
                 .ThenInclude(i => i.ProdutoServico)
+            .AsQueryable();
+
+        query = orderBy switch
+        {
+            "data" => query.OrderByDescending(v => v.Data),
+            "valor" => query.OrderByDescending(v => v.ValorTotal),
+            _ => query.OrderBy(v => v.Id)
+        };
+
+        return await query
+            .Skip((pagina - 1) * tamanhoPagina)
+            .Take(tamanhoPagina)
             .ToListAsync();
     }
 

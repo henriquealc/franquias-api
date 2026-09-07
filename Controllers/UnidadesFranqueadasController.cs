@@ -18,12 +18,27 @@ public class UnidadesFranqueadasController : ControllerBase
         _context = context;
     }
 
-    // GET: api/unidadesfranqueadas
+    // GET: api/unidadesfranqueadas?pagina=1&tamanhoPagina=10&orderBy=nome
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<UnidadeFranqueada>>> GetUnidades()
+    public async Task<ActionResult<IEnumerable<UnidadeFranqueada>>> GetUnidades(
+        int pagina = 1,
+        int tamanhoPagina = 10,
+        string? orderBy = null)
     {
-        return await _context.UnidadesFranqueadas
+        var query = _context.UnidadesFranqueadas
             .Include(u => u.Franqueadora)
+            .AsQueryable();
+
+        query = orderBy switch
+        {
+            "nome" => query.OrderBy(u => u.NomeUnidade),
+            "cidade" => query.OrderBy(u => u.Cidade),
+            _ => query.OrderBy(u => u.Id)
+        };
+
+        return await query
+            .Skip((pagina - 1) * tamanhoPagina)
+            .Take(tamanhoPagina)
             .ToListAsync();
     }
 
@@ -41,6 +56,41 @@ public class UnidadesFranqueadasController : ControllerBase
         }
 
         return unidade;
+    }
+
+    // GET: api/unidadesfranqueadas/buscar?nome=xxx&cidade=xxx&cnpj=xxx&responsavel=xxx
+    [HttpGet("buscar")]
+    public async Task<ActionResult<IEnumerable<UnidadeFranqueada>>> Buscar(
+        string? nome,
+        string? cidade,
+        string? cnpj,
+        string? responsavel)
+    {
+        var query = _context.UnidadesFranqueadas
+            .Include(u => u.Franqueadora)
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(nome))
+        {
+            query = query.Where(u => u.NomeUnidade.Contains(nome));
+        }
+
+        if (!string.IsNullOrEmpty(cidade))
+        {
+            query = query.Where(u => u.Cidade.Contains(cidade));
+        }
+
+        if (!string.IsNullOrEmpty(cnpj))
+        {
+            query = query.Where(u => u.Cnpj == cnpj);
+        }
+
+        if (!string.IsNullOrEmpty(responsavel))
+        {
+            query = query.Where(u => u.NomeResponsavel.Contains(responsavel));
+        }
+
+        return await query.ToListAsync();
     }
 
     // POST: api/unidadesfranqueadas
@@ -66,6 +116,8 @@ public class UnidadesFranqueadasController : ControllerBase
 
         return CreatedAtAction(nameof(GetUnidade), new { id = unidade.Id }, unidade);
     }
+
+    [Authorize(Roles = "Administrador,Gestor")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Atualizar(int id, [FromBody] UnidadeFranqueadaUpdateDto dto)
     {

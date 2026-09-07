@@ -81,6 +81,7 @@ public class RoyaltiesController : ControllerBase
     }
 
     // PUT: api/royalties/5/pagar
+    [Authorize(Roles = "Administrador,Gestor")]
     [HttpPut("{id}/pagar")]
     public async Task<IActionResult> MarcarComoPago(int id)
     {

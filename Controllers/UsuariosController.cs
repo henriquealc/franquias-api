@@ -18,11 +18,28 @@ public class UsuariosController : ControllerBase
         _context = context;
     }
 
-    // GET: api/usuarios
+    // GET: api/usuarios?pagina=1&tamanhoPagina=10&orderBy=nome
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
+    public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios(
+        int pagina = 1,
+        int tamanhoPagina = 10,
+        string? orderBy = null)
     {
-        return await _context.Usuarios.ToListAsync();
+        var query = _context.Usuarios.AsQueryable();
+
+        query = orderBy switch
+        {
+            "nome" => query.OrderBy(u => u.Nome),
+            "email" => query.OrderBy(u => u.Email),
+            _ => query.OrderBy(u => u.Id)
+        };
+
+        var resultado = await query
+            .Skip((pagina - 1) * tamanhoPagina)
+            .Take(tamanhoPagina)
+            .ToListAsync();
+
+        return resultado;
     }
 
     // GET: api/usuarios/5

@@ -18,11 +18,25 @@ public class FornecedoresController : ControllerBase
         _context = context;
     }
 
-    // GET: api/fornecedores
+    // GET: api/fornecedores?pagina=1&tamanhoPagina=10&orderBy=nome
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Fornecedor>>> GetFornecedores()
+    public async Task<ActionResult<IEnumerable<Fornecedor>>> GetFornecedores(
+        int pagina = 1,
+        int tamanhoPagina = 10,
+        string? orderBy = null)
     {
-        return await _context.Fornecedores.ToListAsync();
+        var query = _context.Fornecedores.AsQueryable();
+
+        query = orderBy switch
+        {
+            "nome" => query.OrderBy(f => f.Nome),
+            _ => query.OrderBy(f => f.Id)
+        };
+
+        return await query
+            .Skip((pagina - 1) * tamanhoPagina)
+            .Take(tamanhoPagina)
+            .ToListAsync();
     }
 
     // GET: api/fornecedores/5
@@ -39,9 +53,9 @@ public class FornecedoresController : ControllerBase
         return fornecedor;
     }
 
-    // GET: api/fornecedores/buscar?nome=xxx&cnpj=xxx
+    // GET: api/fornecedores/buscar?nome=xxx&cnpj=xxx&ativo=true
     [HttpGet("buscar")]
-    public async Task<ActionResult<IEnumerable<Fornecedor>>> Buscar(string? nome, string? cnpj)
+    public async Task<ActionResult<IEnumerable<Fornecedor>>> Buscar(string? nome, string? cnpj, bool? ativo)
     {
         var query = _context.Fornecedores.AsQueryable();
 
@@ -53,6 +67,11 @@ public class FornecedoresController : ControllerBase
         if (!string.IsNullOrEmpty(cnpj))
         {
             query = query.Where(f => f.Cnpj == cnpj);
+        }
+
+        if (ativo.HasValue)
+        {
+            query = query.Where(f => f.Ativo == ativo.Value);
         }
 
         return await query.ToListAsync();
@@ -82,7 +101,8 @@ public class FornecedoresController : ControllerBase
 
         return NoContent();
     }
-    
+
+    [Authorize(Roles = "Administrador,Gestor")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Excluir(int id)
     {

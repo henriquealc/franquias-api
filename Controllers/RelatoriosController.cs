@@ -24,10 +24,11 @@ public class RelatoriosController : ControllerBase
     {
         var resultado = await _context.Vendas
             .Include(v => v.UnidadeFranqueada)
-            .GroupBy(v => v.UnidadeFranqueada!.NomeUnidade)
+            .GroupBy(v => new { v.UnidadeFranqueadaId, v.UnidadeFranqueada!.NomeUnidade })
             .Select(g => new
             {
-                Unidade = g.Key,
+                UnidadeId = g.Key.UnidadeFranqueadaId,
+                Unidade = g.Key.NomeUnidade,
                 Faturamento = g.Sum(v => v.ValorTotal)
             })
             .OrderByDescending(x => x.Faturamento)
