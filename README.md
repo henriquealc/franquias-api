@@ -136,9 +136,9 @@ Além disso, UnidadesFranqueadas, ProdutosServicos e Fornecedores possuem endpoi
 ## Estrutura do projeto
 
 Franquias.Api/
-├── Controllers/ -> Endpoints da API
-├── Models/ -> Entidades do banco de dados
-├── DTOs/ -> Objetos de transferência de dados
-├── Data/ -> Contexto do Entity Framework Core
-├── Migrations/ -> Histórico de alterações do banco
-└── Program.cs -> Configuração da aplicação e seed de dados
+  - Controllers/ -> Endpoints da API
+  - Models/ -> Entidades do banco de dados
+  - DTOs/ -> Objetos de transferência de dados
+  - Data/ -> Contexto do Entity Framework Core
+  - Migrations/ -> Histórico de alterações do banco
+  - Program.cs -> Configuração da aplicação e seed de dados
