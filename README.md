@@ -56,7 +56,7 @@ dotnet ef database update
 dotnet run
 
 
-Na primeira execução, o sistema cria automaticamente um conjunto de dados de exemplo (seed) caso o banco esteja vazio — não é necessário cadastrar nada manualmente para começar a testar.
+Na primeira execução, o sistema cria automaticamente um conjunto de dados de exemplo (seed) caso o banco esteja vazio, não é necessário cadastrar nada manualmente para começar a testar.
 
 5. Acesse a documentação interativa (Swagger) em:
 
@@ -104,7 +104,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 **Testando pelo Swagger:**
 1. Clique no botão "Authorize" (cadeado, canto superior direito da página `/swagger`).
-2. Cole apenas o valor do token (sem a palavra "Bearer" — o Swagger adiciona isso automaticamente).
+2. Cole apenas o valor do token (sem a palavra "Bearer", o Swagger adiciona isso automaticamente).
 3. Clique em "Authorize" e depois "Close".
 4. Todos os endpoints protegidos passam a funcionar normalmente enquanto o token for válido.
 
