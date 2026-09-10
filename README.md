@@ -133,6 +133,139 @@ GET /api/UnidadesFranqueadas?pagina=1&tamanhoPagina=10&orderBy=nome
 
 Além disso, UnidadesFranqueadas, ProdutosServicos e Fornecedores possuem endpoints `/buscar` com filtros específicos (nome, cidade, CNPJ, responsável, categoria, status).
 
+## Exemplos de uso
+
+Abaixo, exemplos reais de requisições para os principais fluxos da API. Faça login primeiro (veja seção "Autenticação" acima) e use o token retornado no cabeçalho `Authorization` de cada chamada seguinte.
+
+### Cadastrar uma franqueadora
+
+`POST /api/Franqueadoras`
+
+```json
+{
+  "nomeFantasia": "Franquias Brasil",
+  "razaoSocial": "Franquias Brasil LTDA",
+  "cnpj": "11222333000144",
+  "contato": "(81) 3333-0000",
+  "endereco": "Av. Central, 500",
+  "ativa": true,
+  "percentualRoyalty": 5
+}
+```
+
+### Cadastrar uma unidade franqueada
+
+`POST /api/UnidadesFranqueadas`
+
+```json
+{
+  "nomeUnidade": "Franquias Centro",
+  "cnpj": "99988877000166",
+  "cidade": "Recife",
+  "endereco": "Rua Principal, 100",
+  "nomeResponsavel": "Maria Silva",
+  "contatoResponsavel": "(81) 99999-0000",
+  "dataInicio": "2024-01-15",
+  "ativa": true,
+  "franqueadoraId": 1
+}
+```
+
+### Buscar unidades por cidade, nome, CNPJ ou responsável
+
+GET /api/UnidadesFranqueadas/buscar?cidade=Recife
+
+
+### Cadastrar um produto ou serviço
+
+`POST /api/ProdutosServicos`
+
+```json
+{
+  "nome": "Combo Lanche + Refrigerante",
+  "categoria": "Alimentação",
+  "descricao": "Combo padrão da rede",
+  "precoBase": 25.90,
+  "ativo": true
+}
+```
+
+### Registrar entrada de estoque
+
+`POST /api/Estoque/movimentar`
+
+```json
+{
+  "tipo": "Entrada",
+  "quantidade": 50,
+  "observacao": "Estoque inicial",
+  "produtoServicoId": 1,
+  "unidadeFranqueadaId": 1
+}
+```
+
+### Consultar saldo de estoque
+
+GET /api/Estoque/saldo/1/1
+
+
+### Registrar uma venda com itens
+
+`POST /api/Vendas`
+
+```json
+{
+  "unidadeFranqueadaId": 1,
+  "itens": [
+    { "produtoServicoId": 1, "quantidade": 5 }
+  ]
+}
+```
+
+O valor total é calculado automaticamente a partir dos itens, e o estoque é debitado na mesma operação.
+
+### Calcular o royalty de uma unidade em um período
+
+POST /api/Royalties/calcular?unidadeFranqueadaId=1&periodoInicio=2026-01-01&periodoFim=2026-12-31
+
+
+### Consultar relatórios gerenciais
+
+GET /api/Relatorios/faturamento-por-unidade
+GET /api/Relatorios/ranking-unidades
+GET /api/Relatorios/royalties-total
+GET /api/Relatorios/produtos-mais-vendidos
+GET /api/Relatorios/chamados-por-status
+GET /api/Relatorios/estoque-critico?minimo=20
+
+
+### Cadastrar um fornecedor
+
+`POST /api/Fornecedores`
+
+```json
+{
+  "nome": "Distribuidora ABC",
+  "cnpj": "98765432000111",
+  "contato": "(81) 3222-1111",
+  "categoria": "Bebidas",
+  "ativo": true
+}
+```
+
+### Abrir um chamado de suporte
+
+`POST /api/ChamadosSuporte`
+
+```json
+{
+  "categoria": "Financeiro",
+  "descricao": "Dúvida sobre cálculo de royalty do mês",
+  "prioridade": "Media",
+  "unidadeFranqueadaId": 1
+}
+```
+
 ## Estrutura do projeto
 
 Franquias.Api/
